@@ -1,7 +1,0 @@
-<Solution>
-  <Configurations>
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
-  <Project Path="Farina_Denys_Task_1/Farina_Denys_Task_1.vcxproj" />
-</Solution>
