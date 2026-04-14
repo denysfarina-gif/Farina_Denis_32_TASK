@@ -1,5 +1,0 @@
-﻿  Farina_Denys_Task_1.cpp
-C:\Users\mode\Desktop\Prac\Farina_Denys_Task_1\Farina_Denys_Task_1\Farina_Denys_Task_1.cpp(38,11): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\mode\Desktop\Prac\Farina_Denys_Task_1\Farina_Denys_Task_1\Farina_Denys_Task_1.cpp(45,11): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\mode\Desktop\Prac\Farina_Denys_Task_1\Farina_Denys_Task_1\Farina_Denys_Task_1.cpp(71,18): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Farina_Denys_Task_1.vcxproj -> C:\Users\mode\Desktop\Prac\Farina_Denys_Task_1\x64\Debug\Farina_Denys_Task_1.exe
