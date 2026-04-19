@@ -13,6 +13,18 @@ struct Country {
     string gdp;
     string governmentForm;
 };
+void out(string s, int width) {
+    int count = 0;
+    for (int i = 0; i < s.length(); i++) {
+        if ((unsigned char)s[i] < 128 || (unsigned char)s[i] >= 192) {
+            count++;
+        }
+    }
+    cout << s;
+    for (int i = 0; i < (width - count); i++) {
+        cout << " ";
+    }
+}
 
 string cleanString(string str) {
     while (!str.empty() && (isspace((unsigned char)str.back()) || str.back() == '\r' || str.back() == '\n')) {
@@ -25,21 +37,23 @@ string cleanString(string str) {
 }
 
 void printHeader() {
-    cout << "\n" << left << setw(25) << "Назва"
-        << setw(15) << "Площа"
-        << setw(20) << "Населення"
-        << setw(15) << "ВВП"
-        << "Форма влади" << endl;
-    cout << string(90, '-') << endl;
+    cout << "\n";
+    out("Назва", 20);
+    out("Площа", 15);
+    out("Населення", 20);
+    out("ВВП", 15);
+    cout << "Форма влади" << endl;
+    cout << string(85, '-') << endl;
 }
 
 void printCountry(const Country& c) {
-    cout << left << setw(25) << c.name
-        << setw(15) << c.area
-        << setw(20) << c.population
-        << setw(15) << c.gdp
-        << c.governmentForm << endl;
+    out(c.name, 20);
+    out(c.area, 15);
+    out(c.population, 20);
+    out(c.gdp, 15);
+    cout << c.governmentForm << endl;
 }
+
 
 void addCountryToFile(string filename) {
     Country c;
