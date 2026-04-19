@@ -89,7 +89,7 @@ int main() {
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
 
-    vector<int> sizes = { 10, 50, 800, 5000, 40000, 120000 };
+    vector<int> sizes = { 10, 100, 1000, 8000, 50000, 150000 };
     const int runsCount = 5;
 
     for (int n : sizes) {

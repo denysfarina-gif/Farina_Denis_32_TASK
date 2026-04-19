@@ -3,65 +3,82 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <algorithm>
-#include <Windows.h>
+#include <map>
+#include <windows.h>
 
 using namespace std;
-
-struct SentenceInfo {
-    string text;
-    int words;
-};
-
-int countWordsInSentence(const string& s) {
-    stringstream ss(s);
-    string word;
-    int count = 0;
-    while (ss >> word) {
-        count++;
-    }
-    return count;
-}
 
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
 
-    ifstream fin("input.txt");
-    if (!fin.is_open()) {
-        cout << "Помилка: не вдалося знайти файл input.txt" << endl;
+    ifstream inputFile("input.txt");
+    if (!inputFile.is_open()) {
+        cout << "Файл input.txt не знайдено!" << endl;
         return 1;
     }
 
-    vector<SentenceInfo> list;
-    string line;
+    vector<string> allWords;
+    string word;
+    map<string, int> charFreq;
 
-    while (getline(fin, line)) {
-        if (!line.empty()) {
-            SentenceInfo si;
-            si.text = line;
-            si.words = countWordsInSentence(line);
-            list.push_back(si);
+    while (inputFile >> word) {
+        if (!word.empty() && (word.back() == '.' || word.back() == ',')) {
+            word.pop_back();
+        }
+        allWords.push_back(word);
+
+        for (int i = 0; i < word.length(); ) {
+            string symbol;
+            unsigned char c = (unsigned char)word[i];
+
+            if (c >= 128) {
+                symbol = word.substr(i, 2);
+                i += 2;
+            }
+            else {
+                symbol = word.substr(i, 1);
+                i += 1;
+            }
+            charFreq[symbol]++;
         }
     }
-    fin.close();
+    inputFile.close();
 
-    sort(list.begin(), list.end(), [](const SentenceInfo& a, const SentenceInfo& b) {
-        return a.words > b.words;
-        });
-
-    ofstream fout("output.txt");
-    if (!fout.is_open()) {
-        cout << "Помилка: не вдалося створити файл output.txt" << endl;
-        return 1;
+    if (charFreq.empty()) {
+        cout << "Файл порожній!" << endl;
+        return 0;
     }
 
-    for (const auto& s : list) {
-        fout << s.text << endl;
-    }
-    fout.close();
+    string rarestSymbol;
+    int minCount = -1;
 
-    cout << "Успішно! Речення відсортовані та записані в output.txt" << endl;
+    for (auto const& [sym, count] : charFreq) {
+        if (minCount == -1 || count < minCount) {
+            minCount = count;
+            rarestSymbol = sym;
+        }
+    }
+
+    string targetWord;
+    for (const string& w : allWords) {
+        if (w.find(rarestSymbol) != string::npos) {
+            targetWord = w;
+            break;
+        }
+    }
+
+    ofstream outputFile("output.txt");
+    if (outputFile.is_open()) {
+        outputFile << (unsigned char)0xEF << (unsigned char)0xBB << (unsigned char)0xBF;
+
+        outputFile << "Символ, що зустрічається найрідше: '" << rarestSymbol << "'" << endl;
+        outputFile << "Кількість повторень: " << minCount << endl;
+        outputFile << "Слово з цим символом: " << targetWord << endl;
+
+        outputFile.close();
+        cout << "Готово! Перевір файл output.txt" << endl;
+    }
 
     return 0;
 }

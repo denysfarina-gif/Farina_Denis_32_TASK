@@ -1,5 +1,5 @@
+#define _USE_MATH_DEFINES 
 #include <iostream>
-#include <vector>
 #include <cmath>
 #include <Windows.h>
 
@@ -25,19 +25,39 @@ double calculateStandardDeviation(double arr[], int n, double x_cp) {
     return sqrt(term1 - term2);
 }
 
+double calculateY(double x, double x_cp, double sigma, int n) {
+    double exponent = -pow(x - x_cp, 2) / (2 * pow(sigma, 2));
+    double coefficient = 1.0 / (sigma * sqrt(M_PI * n));
+    double correctionFactor = 1.0 + 1.0 / (12 * n);
+
+    return coefficient * exp(exponent) * correctionFactor;
+}
+
 int main() {
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
 
     const int n = 10;
-    double X[n] = { 20, 11, 10, 19, 22, 23, 11, 18, 14, 25 };
+    double X[n] = { 22.0, 21.0, 10.0, 19.0, 22.0, 13.0, 21.0, 18.0, 14.0, 25.0 };
+
+    cout << "Вхідні дані:" << endl;
+    cout << "{ ";
+    for (int i = 0; i < n; i++) {
+        cout << X[i] << (i < n - 1 ? ", " : " }\n");
+    }
+    cout << endl;
 
     double x_cp = calculateAverage(X, n);
-    double y = calculateStandardDeviation(X, n, x_cp);
+    cout << "Середнє значення = " << x_cp << endl;
 
-    cout << "Результати експерименту:" << endl;
-    cout << "Середнє значення (x_cp) = " << x_cp << endl;
-    cout << "Середньо-квадратичне відхилення (y) = " << y << endl;
+    double sigma = calculateStandardDeviation(X, n, x_cp);
+    cout << "Середньо-квадратичне відхилення = " << sigma << endl;
+
+    cout << "\nРезультати розрахунку y для кожного x:" << endl;
+    for (int i = 0; i < n; i++) {
+        double y = calculateY(X[i], x_cp, sigma, n);
+        cout << "y(" << X[i] << ") = " << y << endl;
+    }
 
     return 0;
 }

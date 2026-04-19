@@ -1,116 +1,99 @@
 #include <iostream>
-#include <ctime>
-#include <cmath>
 #include <iomanip>
-#include <Windows.h>
+#include <ctime>
+#include <cstdlib>
+#include <cmath>
+#include <windows.h>
+
 using namespace std;
 
-int** createMatrix(int n);
-void fillMatrix(int** matrix, int n, int v);
-void printMatrix(int** matrix, int n);
-int findMaxAbs(int** matrix, int n);
-void processSectors(int** matrix, int n, int maxAbs);
-void freeMemory(int** matrix, int n);
+void findFirstInSector3(int** matrix, int n, int k) {
+    bool found = false;
+    cout << "\n1. Пошук у секторі 3 (правий трикутник + головна діагональ):" << endl;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (j >= i && j > n - 1 - i) {
+                if (matrix[i][j] % k == 0) {
+                    cout << "Перший елемент, що ділиться на " << k << ": " << matrix[i][j];
+                    cout << " (знаходиться в рядку " << i << ", стовпці " << j << ")" << endl;
+                    found = true;
+                    return; 
+                }
+            }
+        }
+    }
+    if (!found) {
+        cout << "Елементів, що діляться на " << k << " без остачі, не знайдено." << endl;
+    }
+}
+
+void processSector8(int** matrix, int n, int minAbsValue) {
+    int count = 0;
+    cout << "\n2. Робота у секторі 8 (нижче побічної діагоналі):" << endl;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i + j > n - 1) {
+                count++;
+                matrix[i][j] = minAbsValue;
+            }
+        }
+    }
+    cout << "Кількість елементів у секторі 8: " << count << endl;
+    cout << "Всі вони були замінені на мінімальне за модулем значення: " << minAbsValue << endl;
+}
 
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
 
-    srand(static_cast<unsigned int>(time(0)));
-    int n;
-    int variant = 33; 
-
-    cout << "Введіть розмір квадратної матриці n: ";
+    int n, k, variant = 32;
+    cout << "Введіть розмірність матриці n: ";
     cin >> n;
+    cout << "Введіть число k для перевірки подільності: ";
+    cin >> k;
 
-    if (n <= 0) {
-        cout << "Помилка! Розмір має бути більшим за нуль." << endl;
-        return 1;
-    }
-
-    int** matrix = createMatrix(n);
-
-    fillMatrix(matrix, n, variant);
-
-    cout << "\nЗгенерована матриця:" << endl;
-    printMatrix(matrix, n);
-
-    int maxAbs = findMaxAbs(matrix, n);
-    cout << "\nМаксимальне значення за модулем у всій матриці: " << maxAbs << endl;
-
-    processSectors(matrix, n, maxAbs);
-
-    cout << "\nМатриця після заміни елементів у 7 секторі:" << endl;
-    printMatrix(matrix, n);
-
-    freeMemory(matrix, n);
-
-    return 0;
-}
-
-int** createMatrix(int n) {
     int** matrix = new int* [n];
     for (int i = 0; i < n; i++) {
         matrix[i] = new int[n];
     }
-    return matrix;
-}
 
-void fillMatrix(int** matrix, int n, int v) {
-    int limit = 10 + v; 
+    int minAbs = 1000; 
+    int minValWithMinAbs = 0; 
+
+    int rangeMin = -10 - variant;
+    int rangeMax = 10 + variant;  
+
+    cout << "\nПочаткова матриця (діапазон від " << rangeMin << " до " << rangeMax << "):" << endl;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            matrix[i][j] = rand() % (2 * limit + 1) - limit;
-        }
-    }
-}
+            matrix[i][j] = rand() % (rangeMax - rangeMin + 1) + rangeMin;
+            cout << setw(5) << matrix[i][j];
 
-void printMatrix(int** matrix, int n) {
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cout << setw(5) << matrix[i][j] << " ";
+            if (abs(matrix[i][j]) < minAbs) {
+                minAbs = abs(matrix[i][j]);
+                minValWithMinAbs = matrix[i][j];
+            }
         }
         cout << endl;
     }
-}
 
-int findMaxAbs(int** matrix, int n) {
-    int maxAbs = abs(matrix[0][0]);
+    findFirstInSector3(matrix, n, k);
+    processSector8(matrix, n, minValWithMinAbs);
+
+    cout << "\nМатриця після змін у секторі 8:" << endl;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (abs(matrix[i][j]) > maxAbs) {
-                maxAbs = abs(matrix[i][j]);
-            }
+            cout << setw(5) << matrix[i][j];
         }
-    }
-    return maxAbs;
-}
-
-void processSectors(int** matrix, int n, int maxAbs) {
-    int evenCountS4 = 0;
-    int elementsInS7 = 0;
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (i >= n / 2 && j >= n / 2 && i < j) {
-                if (matrix[i][j] % 2 == 0) {
-                    evenCountS4++;
-                }
-            }
-            if (i >= n / 2 && j < n / 2 && (i + j) < (n - 1)) {
-                elementsInS7++;
-                matrix[i][j] = maxAbs; 
-            }
-        }
+        cout << endl;
     }
 
-    cout << "Знайдено парних чисел у 4 секторі: " << evenCountS4 << endl;
-    cout << "Замінено елементів у 7 секторі: " << elementsInS7 << endl;
-}
-
-void freeMemory(int** matrix, int n) {
     for (int i = 0; i < n; i++) {
         delete[] matrix[i];
     }
     delete[] matrix;
+
+    return 0;
 }
